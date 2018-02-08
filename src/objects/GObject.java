@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 public abstract class GObject {
 
 	protected boolean selected;
-	
+
 	protected int x;
 	protected int y;
 	protected int width;
@@ -23,20 +23,22 @@ public abstract class GObject {
 	}
 
 	public boolean pointerHit(int pointerX, int pointerY) {
-		// TODO: Implement this method.
+		if (pointerX >= x && pointerX <= x + width && pointerY >= y && pointerY <= y + height)
+			return true;
 		return false;
 	}
-	
+
 	public void selected() {
-		// TODO: Implement this method.
+		this.selected = true;
 	}
-	
+
 	public void deselected() {
-		// TODO: Implement this method.
+		this.selected = false;
 	}
-	
+
 	public void move(int dX, int dY) {
-		// TODO: Implement this method.
+		this.x += dX;
+		this.y += dY;
 	}
 
 	public final void paint(Graphics g) {
@@ -61,5 +63,5 @@ public abstract class GObject {
 	public abstract void paintObject(Graphics g);
 
 	public abstract void paintLabel(Graphics g);
-	
+
 }

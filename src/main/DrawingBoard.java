@@ -9,12 +9,12 @@ import objects.*;
 
 public class DrawingBoard extends JPanel {
 
-	private MouseAdapter mouseAdapter; 
+	private MouseAdapter mouseAdapter;
 	private List<GObject> gObjects;
 	private GObject target;
-	
+
 	private int gridSize = 10;
-	
+
 	public DrawingBoard() {
 		gObjects = new ArrayList<GObject>();
 		mouseAdapter = new MAdapter();
@@ -22,23 +22,37 @@ public class DrawingBoard extends JPanel {
 		addMouseMotionListener(mouseAdapter);
 		setPreferredSize(new Dimension(800, 600));
 	}
-	
+
 	public void addGObject(GObject gObject) {
-		// TODO: Implement this method.
+		gObjects.add(gObject);
+
+		repaint();
 	}
-	
+
 	public void groupAll() {
-		// TODO: Implement this method.
+		CompositeGObject newGroup = new CompositeGObject();
+		for (GObject object : this.gObjects) {
+			newGroup.add(object);
+		}
+		this.gObjects.clear();
+		newGroup.recalculateRegion();
+		this.gObjects.add(newGroup);
+
+		repaint();
 	}
 
 	public void deleteSelected() {
-		// TODO: Implement this method.
+		this.gObjects.remove(target);
+
+		repaint();
 	}
-	
+
 	public void clear() {
-		// TODO: Implement this method.
+		this.gObjects.clear();
+
+		repaint();
 	}
-	
+
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
@@ -71,22 +85,44 @@ public class DrawingBoard extends JPanel {
 	}
 
 	class MAdapter extends MouseAdapter {
+		private int currentX;
+		private int currentY;
 
-		// TODO: You need some variables here
-		
 		private void deselectAll() {
-			// TODO: Implement this method.
+			target = null;
 		}
-		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO: Implement this method.
+			currentX = e.getX();
+			currentY = e.getY();
+			int count = 0;
+			for (GObject gObject : gObjects) {
+				gObject.deselected();
+				if (gObject.pointerHit(currentX, currentY)) {
+					target = gObject;
+					count++;
+				}
+			}
+			if (count == 0)
+				deselectAll();
+			else
+				target.selected();
+			repaint();
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// TODO: Implement this method.
+			if (target == null)
+				return;
+			int dx = e.getX() - currentX;
+			int dy = e.getY() - currentY;
+			target.move(dx, dy);
+			repaint();
+			this.currentX = e.getX();
+			this.currentY = e.getY();
 		}
+
 	}
-	
+
 }
